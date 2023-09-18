@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.ViewStatsDto;
+import ru.practicum.ewm.stats.dto.ViewStatsRequestDto;
 import ru.practicum.ewm.stats.server.service.StatService;
 
 import javax.validation.Valid;
@@ -34,6 +35,9 @@ public class StatsController {
                                            @RequestParam(required = false) List<String> uris,
                                            @RequestParam(defaultValue = "false") Boolean unique) {
         log.info("Получение статистики по посещениям");
-        return statService.getViewStats(start, end, uris, unique);
+        ViewStatsRequestDto viewStatsRequestDto = new ViewStatsRequestDto(
+                start, end, uris, unique
+        );
+        return statService.getViewStats(viewStatsRequestDto);
     }
 }

@@ -11,15 +11,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.ViewStatsDto;
+import ru.practicum.ewm.stats.dto.ViewStatsRequestDto;
 import ru.practicum.ewm.stats.server.service.StatService;
 import ru.practicum.ewm.stats.server.utils.DataTest;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,7 +52,7 @@ class StatsControllerTest {
         ViewStatsDto viewStatDto = DataTest.testViewStatsDto();
         List<ViewStatsDto> viewStatDtoList = List.of(viewStatDto);
 
-        when(statService.getViewStats(any(LocalDateTime.class), any(LocalDateTime.class), any(), anyBoolean()))
+        when(statService.getViewStats(any(ViewStatsRequestDto.class)))
                 .thenReturn(viewStatDtoList);
 
         mockMvc.perform(get("/stats")

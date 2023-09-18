@@ -10,14 +10,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.ViewStatsDto;
+import ru.practicum.ewm.stats.dto.ViewStatsRequestDto;
+import ru.practicum.ewm.stats.server.model.Application;
 import ru.practicum.ewm.stats.server.model.EndpointHit;
 import ru.practicum.ewm.stats.server.model.ViewStats;
+import ru.practicum.ewm.stats.server.repository.ApplicationRepository;
 import ru.practicum.ewm.stats.server.repository.EndpointHitRepository;
 import ru.practicum.ewm.stats.server.utils.DataTest;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -29,13 +32,19 @@ class StatServiceImplTest {
     @Mock
     EndpointHitRepository endpointHitRepository;
 
+    @Mock
+    ApplicationRepository applicationRepository;
+
     @InjectMocks
     StatServiceImpl statService;
 
     @Test
     void createHit() {
         EndpointHitDto hitDto = DataTest.testEndpointHitDto();
+        Application app = DataTest.testApplication();
         EndpointHit hit = DataTest.testEndpointHit1();
+        hit.setApp(app);
+        when(applicationRepository.findByName(any())).thenReturn(Optional.of(app));
         when(endpointHitRepository.save(any(EndpointHit.class)))
                 .thenReturn(hit);
 
@@ -52,11 +61,11 @@ class StatServiceImplTest {
     @Test
     void getViewStatsByUniqueIp() {
         ViewStats viewStat = DataTest.testViewStats();
+        ViewStatsRequestDto viewStatsRequestDto = DataTest.testViewStatsRequestDto();
         when(endpointHitRepository.findViewStatsByUniqueIp(any(LocalDateTime.class), any(LocalDateTime.class), anyList()))
                 .thenReturn(List.of(viewStat));
 
-        List<ViewStatsDto> result = statService.getViewStats(DataTest.time.minusYears(2),
-                DataTest.time.plusYears(2), List.of("/events/1"), true);
+        List<ViewStatsDto> result = statService.getViewStats(viewStatsRequestDto);
 
         Assertions.assertEquals(1, result.size());
     }
@@ -64,11 +73,12 @@ class StatServiceImplTest {
     @Test
     void getViewStatsByNonUniqueIp() {
         ViewStats viewStat = DataTest.testViewStats();
+        ViewStatsRequestDto viewStatsRequestDto = DataTest.testViewStatsRequestDto();
+        viewStatsRequestDto.setUnique(false);
         when(endpointHitRepository.findViewStatsByNonUniqueIp(any(LocalDateTime.class), any(LocalDateTime.class), anyList()))
                 .thenReturn(List.of(viewStat));
 
-        List<ViewStatsDto> result = statService.getViewStats(DataTest.time.minusYears(2),
-                DataTest.time.plusYears(2), List.of("/events/1"), false);
+        List<ViewStatsDto> result = statService.getViewStats(viewStatsRequestDto);
 
         Assertions.assertEquals(1, result.size());
     }
@@ -76,11 +86,11 @@ class StatServiceImplTest {
     @Test
     void getViewStatsWithoutUris() {
         ViewStats viewStat = DataTest.testViewStats();
+        ViewStatsRequestDto viewStatsRequestDto = DataTest.testViewStatsRequestDto2();
         when(endpointHitRepository.findViewStatsByNonUniqueIp(any(LocalDateTime.class), any(LocalDateTime.class), anyList()))
                 .thenReturn(List.of(viewStat));
 
-        List<ViewStatsDto> result = statService.getViewStats(DataTest.time.minusYears(2),
-                DataTest.time.plusYears(2), Collections.emptyList(), false);
+        List<ViewStatsDto> result = statService.getViewStats(viewStatsRequestDto);
 
         Assertions.assertEquals(1, result.size());
     }

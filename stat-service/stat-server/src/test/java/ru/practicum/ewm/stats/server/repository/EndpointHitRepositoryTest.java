@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.practicum.ewm.stats.dto.ViewStatsDto;
+import ru.practicum.ewm.stats.server.model.Application;
 import ru.practicum.ewm.stats.server.model.EndpointHit;
 import ru.practicum.ewm.stats.server.model.ViewStats;
 import ru.practicum.ewm.stats.server.utils.DataTest;
@@ -22,13 +23,23 @@ class EndpointHitRepositoryTest {
     @Autowired
     private EndpointHitRepository endpointHitRepository;
 
+    @Autowired
+    private ApplicationRepository applicationRepository;
+
     @BeforeEach
     void saveAll() {
+        Application app = DataTest.testApplication();
         EndpointHit endpointHit1 = DataTest.testEndpointHit1();
+        endpointHit1.setApp(app);
         EndpointHit endpointHit2 = DataTest.testEndpointHit1_1();
+        endpointHit2.setApp(app);
         EndpointHit endpointHit3 = DataTest.testEndpointHit2();
+        endpointHit3.setApp(app);
         EndpointHit endpointHit4 = DataTest.testEndpointHit3();
+        endpointHit4.setApp(app);
         EndpointHit endpointHit5 = DataTest.testEndpointHit3_3();
+        endpointHit5.setApp(app);
+        applicationRepository.save(app);
         endpointHitRepository.saveAll(List.of(endpointHit1, endpointHit2, endpointHit3, endpointHit4, endpointHit5));
     }
 
@@ -38,48 +49,54 @@ class EndpointHitRepositoryTest {
     }
 
     @Test
-    void findViewStatsByUniqueIp() {
-        ViewStatsDto viewStatsDto1 = DataTest.testViewStatsDto();
-        ViewStatsDto viewStatsDto2 = DataTest.testViewStatsDto2();
+    void findViewStatsByUniqueIpReturnTwoHits() {
+        ViewStatsDto viewStatsDto = DataTest.testViewStatsDto2();
         List<ViewStats> result = endpointHitRepository.findViewStatsByUniqueIp(DataTest.time.minusYears(2),
                 DataTest.time.plusYears(2), List.of("/events/2"));
-        List<ViewStats> result2 = endpointHitRepository.findViewStatsByUniqueIp(DataTest.time.minusYears(2),
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(2L, result.get(0).getHits());
+        Assertions.assertEquals(viewStatsDto.getApp(), result.get(0).getApp().getName());
+        Assertions.assertEquals(viewStatsDto.getUri(), result.get(0).getUri());
+    }
+
+    @Test
+    void findViewStatsByNonUniqueIpReturnThreeHits() {
+        ViewStatsDto viewStatsDto = DataTest.testViewStatsDto2();
+        List<ViewStats> result = endpointHitRepository.findViewStatsByNonUniqueIp(DataTest.time.minusYears(2),
+                DataTest.time.plusYears(2), List.of("/events/2"));
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(3L, result.get(0).getHits());
+        Assertions.assertEquals(viewStatsDto.getApp(), result.get(0).getApp().getName());
+        Assertions.assertEquals(viewStatsDto.getUri(), result.get(0).getUri());
+    }
+
+    @Test
+    void findViewStatsByUniqueIpReturnOneHit() {
+        ViewStatsDto viewStatsDto = DataTest.testViewStatsDto();
+        List<ViewStats> result = endpointHitRepository.findViewStatsByUniqueIp(DataTest.time.minusYears(2),
+                DataTest.time.plusYears(2), List.of("/events/1"));
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(1L, result.get(0).getHits());
+        Assertions.assertEquals(viewStatsDto.getApp(), result.get(0).getApp().getName());
+        Assertions.assertEquals(viewStatsDto.getUri(), result.get(0).getUri());
+    }
+
+    @Test
+    void findViewStatsByNonUniqueIpReturnTwoHits() {
+        ViewStatsDto viewStatsDto = DataTest.testViewStatsDto();
+        List<ViewStats> result = endpointHitRepository.findViewStatsByNonUniqueIp(DataTest.time.minusYears(2),
                 DataTest.time.plusYears(2), List.of("/events/1"));
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(2L, result.get(0).getHits());
-        Assertions.assertEquals(viewStatsDto2.getApp(), result.get(0).getApp());
-        Assertions.assertEquals(viewStatsDto2.getUri(), result.get(0).getUri());
-
-        Assertions.assertNotNull(result2);
-        Assertions.assertEquals(1, result2.size());
-        Assertions.assertEquals(1L, result2.get(0).getHits());
-        Assertions.assertEquals(viewStatsDto1.getApp(), result2.get(0).getApp());
-        Assertions.assertEquals(viewStatsDto1.getUri(), result2.get(0).getUri());
-
-    }
-
-    @Test
-    void findViewStatsByNonUniqueIp() {
-        ViewStatsDto viewStatsDto1 = DataTest.testViewStatsDto();
-        ViewStatsDto viewStatsDto2 = DataTest.testViewStatsDto2();
-
-        List<ViewStats> result = endpointHitRepository.findViewStatsByNonUniqueIp(DataTest.time.minusYears(2),
-                DataTest.time.plusYears(2), List.of("/events/2"));
-        List<ViewStats> result2 = endpointHitRepository.findViewStatsByNonUniqueIp(DataTest.time.minusYears(2),
-                DataTest.time.plusYears(2), List.of("/events/1"));
-
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(3L, result.get(0).getHits());
-        Assertions.assertEquals(viewStatsDto2.getApp(), result.get(0).getApp());
-        Assertions.assertEquals(viewStatsDto2.getUri(), result.get(0).getUri());
-
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(1, result2.size());
-        Assertions.assertEquals(2L, result2.get(0).getHits());
-        Assertions.assertEquals(viewStatsDto1.getApp(), result2.get(0).getApp());
-        Assertions.assertEquals(viewStatsDto1.getUri(), result2.get(0).getUri());
+        Assertions.assertEquals(viewStatsDto.getApp(), result.get(0).getApp().getName());
+        Assertions.assertEquals(viewStatsDto.getUri(), result.get(0).getUri());
     }
 }

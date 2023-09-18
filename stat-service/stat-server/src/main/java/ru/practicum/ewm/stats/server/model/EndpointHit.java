@@ -20,8 +20,9 @@ public class EndpointHit {
     @Column(name = "hit_id")
     Long id;
 
-    @Column(name = "hit_app")
-    String app;
+    @ManyToOne
+    @JoinColumn(name = "app_id", nullable = false)
+    Application app;
 
     @Column(name = "hit_uri")
     String uri;

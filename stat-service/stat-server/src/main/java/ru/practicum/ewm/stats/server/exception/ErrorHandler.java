@@ -20,6 +20,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable exp) {
+        log.error("Сервер не может выполнить запрос", exp);
         return new ErrorResponse("Произошла непредвиденная ошибка");
     }
 }

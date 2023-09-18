@@ -18,7 +18,6 @@ public interface EndpointHitRepository extends JpaRepository<EndpointHit, Long> 
             "ORDER BY COUNT(e.ip) DESC")
     List<ViewStats> findViewStatsByUniqueIp(LocalDateTime start, LocalDateTime end, List<String> uris);
 
-
     @Query("SELECT new ru.practicum.ewm.stats.server.model.ViewStats(e.app, e.uri, COUNT(e.ip)) " +
             "FROM EndpointHit e " +
             "WHERE e.timestamp BETWEEN :start AND :end " +
@@ -26,6 +25,4 @@ public interface EndpointHitRepository extends JpaRepository<EndpointHit, Long> 
             "GROUP BY e.app, e.uri " +
             "ORDER BY COUNT(e.ip) DESC")
     List<ViewStats> findViewStatsByNonUniqueIp(LocalDateTime start, LocalDateTime end, List<String> uris);
-
-
 }
