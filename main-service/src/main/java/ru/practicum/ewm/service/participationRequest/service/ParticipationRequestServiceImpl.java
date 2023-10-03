@@ -31,17 +31,14 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Override
     @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getAllRequestsByRequester(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        getUserOrElseThrow(userId);
         return requestMapper.fromListRequestToDto(requestRepository.findAllByRequesterId(userId));
     }
 
     @Override
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
-        User requester = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Событие не найдено"));
+        User requester = getUserOrElseThrow(userId);
+        Event event = getEventOrElseThrow(eventId);
 
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Запрос не может быть выполнен инициатором");
@@ -73,10 +70,8 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     public ParticipationRequestDto cancelRequestByRequester(Long userId, Long requestId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        ParticipationRequest request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new NotFoundException("Запрос не найден"));
+        getUserOrElseThrow(userId);
+        ParticipationRequest request = getRequestOrElseThrow(requestId);
 
         if (!request.getRequester().getId().equals(userId)) {
             throw new NotFoundException("Запрос для данного пользователя не найден");
@@ -88,4 +83,20 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
         return requestMapper.fromRequestToDto(canceledRequest);
     }
+
+    private ParticipationRequest getRequestOrElseThrow(long requestId) {
+        return requestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("ParticipationRequest with id=" + requestId + " was not found"));
+    }
+
+    private Event getEventOrElseThrow(long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
+    }
+
+    private User getUserOrElseThrow(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found"));
+    }
+
 }

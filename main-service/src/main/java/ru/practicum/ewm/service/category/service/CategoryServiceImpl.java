@@ -30,8 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public CategoryDto getCategory(long catId) {
-        Category category = categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException("Категория не найдена"));
+        Category category = getCategoryOrElseThrow(catId);
         return categoryMapper.fromCategoryToDto(category);
     }
 
@@ -43,9 +42,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto updateCategory(CategoryDto categoryDto, long catId) {
-        Category categoryInRepo = categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException("Категория не найдена"));
+    public CategoryDto updateCategory(CategoryDto categoryDto) {
+        long catId = categoryDto.getId();
+        Category categoryInRepo = getCategoryOrElseThrow(catId);
         if (categoryDto.getName() != null) {
             categoryInRepo.setName(categoryDto.getName());
         }
@@ -55,8 +54,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategoryById(long catId) {
-        categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException("Категория не найдена"));
+        getCategoryOrElseThrow(catId);
         categoryRepository.deleteById(catId);
+    }
+    private Category getCategoryOrElseThrow(long catId) {
+        return categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
     }
 }

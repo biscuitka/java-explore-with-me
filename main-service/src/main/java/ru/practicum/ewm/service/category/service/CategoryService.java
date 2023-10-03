@@ -12,7 +12,7 @@ public interface CategoryService {
 
     CategoryDto createCategory(CategoryDto categoryDto);
 
-    CategoryDto updateCategory(CategoryDto categoryDto, long catId);
+    CategoryDto updateCategory(CategoryDto categoryDto);
 
     void deleteCategoryById(long catId);
 }
