@@ -1,4 +1,4 @@
-package ru.practicum.ewm.service.event.controller.publ;
+package ru.practicum.ewm.service.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.service.constants.HeaderConstants;
 import ru.practicum.ewm.service.constants.UtilConstants;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
+@Validated
 @RequestMapping(path = "/events")
 @RequiredArgsConstructor
 public class EventControllerPublic {
@@ -37,8 +39,8 @@ public class EventControllerPublic {
                                       @RequestParam(required = false) @DateTimeFormat(pattern = UtilConstants.DATETIME_FORMAT) LocalDateTime rangeEnd,
                                       @RequestParam(defaultValue = "false") boolean onlyAvailable,
                                       @RequestParam(defaultValue = "VIEWS") SortEvent sort,
-                                      @Valid @RequestParam(defaultValue = HeaderConstants.DEFAULT_FROM_VALUE) @Min(0) int from,
-                                      @Valid @RequestParam(defaultValue = HeaderConstants.DEFAULT_SIZE_VALUE) int size,
+                                      @RequestParam(defaultValue = HeaderConstants.DEFAULT_FROM_VALUE) @Min(0) int from,
+                                      @RequestParam(defaultValue = HeaderConstants.DEFAULT_SIZE_VALUE) int size,
                                       HttpServletRequest request) {
 
         PublicRequestParamDto requestParamDto = new PublicRequestParamDto(text, categories, paid, rangeStart,

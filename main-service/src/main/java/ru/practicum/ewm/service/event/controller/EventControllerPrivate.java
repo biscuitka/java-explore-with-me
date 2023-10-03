@@ -1,10 +1,11 @@
-package ru.practicum.ewm.service.event.controller.priv;
+package ru.practicum.ewm.service.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.service.constants.HeaderConstants;
 import ru.practicum.ewm.service.event.dto.EventFullDto;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
+@Validated
 @RequestMapping(path = "/users/{userId}/events")
 @RequiredArgsConstructor
 public class EventControllerPrivate {

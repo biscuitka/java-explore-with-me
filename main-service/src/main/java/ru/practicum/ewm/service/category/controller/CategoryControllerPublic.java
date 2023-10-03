@@ -1,10 +1,11 @@
-package ru.practicum.ewm.service.category.controller.publ;
+package ru.practicum.ewm.service.category.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.service.category.dto.CategoryDto;
 import ru.practicum.ewm.service.category.service.CategoryService;
@@ -16,8 +17,9 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 @RequestMapping(path = "/categories")
-public class CategoryControllerPubl {
+public class CategoryControllerPublic {
     private final CategoryService categoryService;
 
     @GetMapping

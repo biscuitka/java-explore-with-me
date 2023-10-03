@@ -1,4 +1,4 @@
-package ru.practicum.ewm.service.user.controller.admin;
+package ru.practicum.ewm.service.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

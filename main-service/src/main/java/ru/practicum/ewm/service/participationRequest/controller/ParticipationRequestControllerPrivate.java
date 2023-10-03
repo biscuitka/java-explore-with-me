@@ -1,4 +1,4 @@
-package ru.practicum.ewm.service.participationRequest.controller.priv;
+package ru.practicum.ewm.service.participationRequest.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
