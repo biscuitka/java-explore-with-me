@@ -17,7 +17,6 @@ import ru.practicum.ewm.service.event.model.SortEvent;
 import ru.practicum.ewm.service.event.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;

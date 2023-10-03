@@ -57,6 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
         getCategoryOrElseThrow(catId);
         categoryRepository.deleteById(catId);
     }
+
     private Category getCategoryOrElseThrow(long catId) {
         return categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));

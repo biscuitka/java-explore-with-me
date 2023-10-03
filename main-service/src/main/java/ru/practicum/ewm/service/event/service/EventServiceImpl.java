@@ -166,9 +166,9 @@ public class EventServiceImpl implements EventService {
 
         List<EventShortDto> shortDtoList = eventMapper.fromEventListToShortDto(events);
         shortDtoList.forEach(eventShortDto -> {
-                    eventShortDto.setConfirmedRequests(countRequestsByEventId.getOrDefault(eventShortDto.getId(), 0L));
-                    eventShortDto.setViews(views.getOrDefault("/events/" + eventShortDto.getId(), 0L));
-                });
+            eventShortDto.setConfirmedRequests(countRequestsByEventId.getOrDefault(eventShortDto.getId(), 0L));
+            eventShortDto.setViews(views.getOrDefault("/events/" + eventShortDto.getId(), 0L));
+        });
 
         switch (sort) {
             case EVENT_DATE:
