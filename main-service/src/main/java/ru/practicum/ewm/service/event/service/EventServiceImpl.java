@@ -76,18 +76,23 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Event> events = eventRepository.findAllByAdmin(userIds, states, categoryIds, rangeStart, rangeEnd, pageable);
-        Map<String, Long> views = getViewsByEvents(events);
-
-        return eventMapper.fromEventListToFullDto(events).stream()
-                .peek(eventFullDto -> {
-                    eventFullDto.setConfirmedRequests(
-                            requestRepository.getCountByEventIdAndStatus(eventFullDto.getId(), ParticipationRequestStatus.CONFIRMED)
-
-                    );
-                    eventFullDto.setViews(views.getOrDefault("/events/" + eventFullDto.getId(), 0L));
-                })
+        List<Long> eventIds = events.stream()
+                .map(Event::getId)
                 .collect(Collectors.toList());
 
+        Map<String, Long> views = getViewsByEvents(events);
+
+        List<ParticipationRequest> allRequests = requestRepository.findAllByEventIdInAndStatus(eventIds, ParticipationRequestStatus.CONFIRMED);
+        Map<Long, Long> countRequestsByEventId = allRequests.stream()
+                .collect(Collectors.groupingBy(r -> r.getEvent().getId(), Collectors.counting()));
+
+        List<EventFullDto> fullDtoList = eventMapper.fromEventListToFullDto(events);
+        fullDtoList.forEach(eventFullDto -> {
+            eventFullDto.setConfirmedRequests(countRequestsByEventId.getOrDefault(eventFullDto.getId(), 0L));
+            eventFullDto.setViews(views.getOrDefault("/events/" + eventFullDto.getId(), 0L));
+        });
+
+        return fullDtoList;
     }
 
     @Override
@@ -149,26 +154,32 @@ public class EventServiceImpl implements EventService {
                             < event.getParticipantLimit()))
                     .collect(Collectors.toList());
         }
+        List<Long> eventIds = events.stream()
+                .map(Event::getId)
+                .collect(Collectors.toList());
 
         Map<String, Long> views = getViewsByEvents(events);
 
-        List<EventShortDto> eventShortDtoList = eventMapper.fromEventListToShortDto(events).stream()
-                .peek(eventShortDto -> {
-                    eventShortDto.setConfirmedRequests(requestRepository.getCountByEventIdAndStatus(eventShortDto.getId(),
-                            ParticipationRequestStatus.CONFIRMED));
+        List<ParticipationRequest> allRequests = requestRepository.findAllByEventIdInAndStatus(eventIds, ParticipationRequestStatus.CONFIRMED);
+        Map<Long, Long> countRequestsByEventId = allRequests.stream()
+                .collect(Collectors.groupingBy(r -> r.getEvent().getId(), Collectors.counting()));
+
+        List<EventShortDto> shortDtoList = eventMapper.fromEventListToShortDto(events);
+        shortDtoList.forEach(eventShortDto -> {
+                    eventShortDto.setConfirmedRequests(countRequestsByEventId.getOrDefault(eventShortDto.getId(), 0L));
                     eventShortDto.setViews(views.getOrDefault("/events/" + eventShortDto.getId(), 0L));
-                })
-                .collect(Collectors.toList());
+                });
 
         switch (sort) {
             case EVENT_DATE:
-                eventShortDtoList.sort(Comparator.comparing(EventShortDto::getEventDate));
+                shortDtoList.sort(Comparator.comparing(EventShortDto::getEventDate));
                 break;
             case VIEWS:
-                eventShortDtoList.sort(Comparator.comparing(EventShortDto::getViews).reversed());
+                shortDtoList.sort(Comparator.comparing(EventShortDto::getViews).reversed());
                 break;
         }
-        return eventShortDtoList;
+
+        return shortDtoList;
     }
 
     @Override
