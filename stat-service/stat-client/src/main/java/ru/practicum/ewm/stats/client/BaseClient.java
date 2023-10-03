@@ -13,7 +13,7 @@ import java.util.Map;
 public class BaseClient {
     protected final RestTemplate rest;
 
-    protected ResponseEntity<Object> get(String path, @Nullable Map<String, Object> parameters) {
+    protected ResponseEntity<Object> get(String path, @Nullable Map<String, java.lang.Object> parameters) {
         return makeAndSendRequest(HttpMethod.GET, path, parameters, null);
     }
 
@@ -35,10 +35,10 @@ public class BaseClient {
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
         }
-        return prepareGatewayResponse(statServerResponse);
+        return prepareStatsResponse(statServerResponse);
     }
 
-    private ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
+    private static ResponseEntity<Object> prepareStatsResponse(ResponseEntity<Object> response) {
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;
         }

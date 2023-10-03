@@ -12,6 +12,7 @@ import ru.practicum.ewm.stats.server.service.StatService;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,10 +35,18 @@ public class StatsController {
                                            @RequestParam LocalDateTime end,
                                            @RequestParam(required = false) List<String> uris,
                                            @RequestParam(defaultValue = "false") Boolean unique) {
-        log.info("Получение статистики по посещениям");
+        if (uris != null && !uris.isEmpty()) {
+            List<String> cleanedUris = new ArrayList<>();
+            for (String uri : uris) {
+                cleanedUris.add(uri.replaceAll("[\\[\\]]", ""));
+            }
+            uris = cleanedUris;
+        }
+
         ViewStatsRequestDto viewStatsRequestDto = new ViewStatsRequestDto(
                 start, end, uris, unique
         );
+        log.info("Получение статистики по посещениям о параметрам: {}", viewStatsRequestDto);
         return statService.getViewStats(viewStatsRequestDto);
     }
 }
