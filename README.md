@@ -2,7 +2,7 @@
 _Приложение ExploreWithMe (англ. «исследуй со мной»). Оно позволит пользователям делиться информацией об 
 интересных событиях и находить компанию для участия в них._
 
-### Pull Request
+### [Pull Request](https://github.com/biscuitka/java-explore-with-me/pull/5)
 
 <details>
   <summary>Сервис статистики</summary> 
