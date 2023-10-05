@@ -19,6 +19,7 @@ public class ParticipationRequestControllerPrivate {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getAll(@PathVariable long userId) {
+        log.info("Запрос участником id: {}, всех его запросов на участие ", userId);
         return requestService.getAllRequestsByRequester(userId);
     }
 

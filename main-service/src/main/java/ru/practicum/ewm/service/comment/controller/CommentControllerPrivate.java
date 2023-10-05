@@ -58,6 +58,7 @@ public class CommentControllerPrivate {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable long userId,
                            @PathVariable long commentId) {
+        log.info("Удаление комментария автором по id: {}", commentId);
         commentService.deleteByCommentIdByAuthor(userId, commentId);
     }
 

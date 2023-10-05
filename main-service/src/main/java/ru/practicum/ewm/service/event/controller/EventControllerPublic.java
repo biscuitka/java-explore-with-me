@@ -41,7 +41,7 @@ public class EventControllerPublic {
                                       @RequestParam(defaultValue = HeaderConstants.DEFAULT_FROM_VALUE) @Min(0) int from,
                                       @RequestParam(defaultValue = HeaderConstants.DEFAULT_SIZE_VALUE) int size,
                                       HttpServletRequest request) {
-
+        log.info("Запрос всех событий с публичного API");
         PublicRequestParamDto requestParamDto = new PublicRequestParamDto(text, categories, paid, rangeStart,
                 rangeEnd, onlyAvailable, sort, request);
 
@@ -53,6 +53,7 @@ public class EventControllerPublic {
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto getById(@PathVariable long id,
                                 HttpServletRequest request) {
+        log.info("Запрос события с публичного API по id: {}", id);
         return eventService.getPublishedEventById(id, request);
     }
 }

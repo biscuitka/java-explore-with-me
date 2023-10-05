@@ -29,6 +29,7 @@ public class CommentControllerPublic {
                                    @RequestParam(defaultValue = HeaderConstants.DEFAULT_FROM_VALUE) @Min(0) int from,
                                    @RequestParam(defaultValue = HeaderConstants.DEFAULT_SIZE_VALUE) int size) {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("createdDate").descending());
+        log.info("Запрос всех комментариев с публичного API к событию id: {}", eventId);
         return commentService.getAllCommentsByEvent(eventId, pageable);
     }
 }

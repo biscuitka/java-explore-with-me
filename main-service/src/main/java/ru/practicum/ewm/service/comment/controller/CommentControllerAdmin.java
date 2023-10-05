@@ -13,7 +13,6 @@ import javax.validation.Valid;
 
 @RestController
 @Slf4j
-@Validated
 @RequestMapping(path = "/admin/comments")
 @RequiredArgsConstructor
 public class CommentControllerAdmin {
@@ -30,6 +29,7 @@ public class CommentControllerAdmin {
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable long commentId) {
+        log.info("Удаление комментария администратором по id: {}", commentId);
         commentService.deleteByCommentIdByAdmin(commentId);
     }
 }
