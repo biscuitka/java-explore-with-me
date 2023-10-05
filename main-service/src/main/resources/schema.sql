@@ -90,11 +90,11 @@ CREATE TABLE IF NOT EXISTS compilations_events
 
 CREATE TABLE IF NOT EXISTS comments
 (
-    comment_id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    comment_author_id     BIGINT NOT NULL,
-    comment_event_id      BIGINT NOT NULL,
-    comment_text          VARCHAR NOT NULL,
-    comment_created_date     TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    comment_id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    comment_author_id    BIGINT                      NOT NULL,
+    comment_event_id     BIGINT                      NOT NULL,
+    comment_text         VARCHAR                     NOT NULL,
+    comment_created_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 
     CONSTRAINT fk_comments_to_users FOREIGN KEY (comment_author_id) REFERENCES users (user_id),
     CONSTRAINT fk_comments_to_events FOREIGN KEY (comment_event_id) REFERENCES events (event_id)

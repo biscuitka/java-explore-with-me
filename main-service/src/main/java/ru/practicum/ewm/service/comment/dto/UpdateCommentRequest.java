@@ -14,6 +14,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateCommentRequest {
+    Long id;
+
     @NotBlank
     @Size(max = 7000)
     private String text;

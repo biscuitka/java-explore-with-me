@@ -47,9 +47,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto updateByAuthor(UpdateCommentRequest commentRequest, long userId, long commentId) {
+    public CommentDto updateByAuthor(UpdateCommentRequest commentRequest, long userId) {
         getUserOrElseThrow(userId);
-        Comment comment = getCommentOrElseThrow(commentId);
+        Comment comment = getCommentOrElseThrow(commentRequest.getId());
 
         if (!comment.getAuthor().getId().equals(userId)) {
             throw new NotFoundException("Комментарий для данного пользователя не найден");
@@ -85,8 +85,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto updateByAdmin(UpdateCommentRequest commentRequest, long commentId) {
-        Comment comment = getCommentOrElseThrow(commentId);
+    public CommentDto updateByAdmin(UpdateCommentRequest commentRequest) {
+        Comment comment = getCommentOrElseThrow(commentRequest.getId());
 
         Optional.ofNullable(commentRequest.getText())
                 .ifPresent(comment::setText);

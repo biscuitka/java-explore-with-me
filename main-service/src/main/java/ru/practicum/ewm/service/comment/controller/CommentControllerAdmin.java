@@ -3,7 +3,6 @@ package ru.practicum.ewm.service.comment.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.service.comment.dto.CommentDto;
 import ru.practicum.ewm.service.comment.dto.UpdateCommentRequest;
@@ -22,8 +21,9 @@ public class CommentControllerAdmin {
     @ResponseStatus(HttpStatus.OK)
     public CommentDto update(@Valid @RequestBody UpdateCommentRequest commentRequest,
                              @PathVariable long commentId) {
+        commentRequest.setId(commentId);
         log.info("Обновление комментария администратором: {}", commentRequest);
-        return commentService.updateByAdmin(commentRequest, commentId);
+        return commentService.updateByAdmin(commentRequest);
     }
 
     @DeleteMapping("/{commentId}")

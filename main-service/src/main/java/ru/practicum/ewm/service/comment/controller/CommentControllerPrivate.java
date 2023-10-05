@@ -40,8 +40,9 @@ public class CommentControllerPrivate {
     public CommentDto update(@Valid @RequestBody UpdateCommentRequest commentRequest,
                              @PathVariable long userId,
                              @PathVariable long commentId) {
+        commentRequest.setId(commentId);
         log.info("Обновление комментария автором: {}", commentRequest);
-        return commentService.updateByAuthor(commentRequest, userId, commentId);
+        return commentService.updateByAuthor(commentRequest, userId);
     }
 
     @GetMapping

@@ -10,7 +10,7 @@ import java.util.List;
 public interface CommentService {
     CommentDto createByAuthor(NewCommentDto commentDto, long userId, long eventId);
 
-    CommentDto updateByAuthor(UpdateCommentRequest commentRequest, long userId, long commentId);
+    CommentDto updateByAuthor(UpdateCommentRequest commentRequest, long userId);
 
     List<CommentDto> getAllCommentsByAuthor(long userId, Pageable pageable);
 
@@ -18,7 +18,7 @@ public interface CommentService {
 
     List<CommentDto> getAllCommentsByEvent(long eventId, Pageable pageable);
 
-    CommentDto updateByAdmin(UpdateCommentRequest commentRequest, long commentId);
+    CommentDto updateByAdmin(UpdateCommentRequest commentRequest);
 
     void deleteByCommentIdByAdmin(long commentId);
 }
