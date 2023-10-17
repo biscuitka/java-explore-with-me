@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.service.category.model.Category;
 import ru.practicum.ewm.service.category.repository.CategoryRepository;
+import ru.practicum.ewm.service.comment.mapper.CommentMapper;
+import ru.practicum.ewm.service.comment.model.Comment;
+import ru.practicum.ewm.service.comment.repository.CommentRepository;
 import ru.practicum.ewm.service.event.dto.*;
 import ru.practicum.ewm.service.event.dto.paramDto.AdminRequestParamDto;
 import ru.practicum.ewm.service.event.dto.paramDto.PublicRequestParamDto;
@@ -52,9 +55,11 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
     private final ParticipationRequestRepository requestRepository;
+    private final CommentRepository commentRepository;
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
     private final ParticipationRequestMapper requestMapper;
+    private final CommentMapper commentMapper;
     private final StatClient statClient;
 
     @Override
@@ -76,9 +81,7 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Event> events = eventRepository.findAllByAdmin(userIds, states, categoryIds, rangeStart, rangeEnd, pageable);
-        List<Long> eventIds = events.stream()
-                .map(Event::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIds = getEventIds(events);
 
         Map<String, Long> views = getViewsByEvents(events);
 
@@ -105,7 +108,10 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getByIdByInitiator(Long userId, Long eventId) {
         Event event = getEventOrElseThrow(eventId);
         checkEventForUser(userId, eventId);
-        return eventMapper.fromEventToFullDto(event);
+        List<Comment> comments = commentRepository.findAllByEventId(eventId);
+        EventFullDto fullDto = eventMapper.fromEventToFullDto(event);
+        fullDto.setComments(commentMapper.fromCommentListToDto(comments));
+        return fullDto;
     }
 
     @Override
@@ -154,9 +160,7 @@ public class EventServiceImpl implements EventService {
                             < event.getParticipantLimit()))
                     .collect(Collectors.toList());
         }
-        List<Long> eventIds = events.stream()
-                .map(Event::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIds = getEventIds(events);
 
         Map<String, Long> views = getViewsByEvents(events);
 
@@ -196,6 +200,9 @@ public class EventServiceImpl implements EventService {
 
         long limit = requestRepository.getCountByEventIdAndStatus(eventId, ParticipationRequestStatus.CONFIRMED);
         fullDto.setConfirmedRequests(limit);
+
+        List<Comment> comments = commentRepository.findAllByEventId(eventId);
+        fullDto.setComments(commentMapper.fromCommentListToDto(comments));
 
         return fullDto;
     }
@@ -393,6 +400,12 @@ public class EventServiceImpl implements EventService {
     private User getUserOrElseThrow(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found"));
+    }
+
+    private List<Long> getEventIds(List<Event> events) {
+        return events.stream()
+                .map(Event::getId)
+                .collect(Collectors.toList());
     }
 
     private void checkEventStateConflictsForAdmin(UpdateEventAdminRequest adminRequest, Event event) {

@@ -28,12 +28,14 @@ public class CompilationControllerPublic {
                                        @RequestParam(defaultValue = HeaderConstants.DEFAULT_FROM_VALUE) @Min(0) int from,
                                        @RequestParam(defaultValue = HeaderConstants.DEFAULT_SIZE_VALUE) int size) {
         Pageable pageable = PageRequest.of(from / size, size);
+        log.info("Запрос всех подборок событий");
         return compilationService.getAllCompilations(pinned, pageable);
     }
 
     @GetMapping("/{compId}")
     @ResponseStatus(HttpStatus.OK)
     public CompilationDto getById(@PathVariable Long compId) {
+        log.info("Запрос подборки событий по id: {}", compId);
         return compilationService.getCompilationById(compId);
     }
 }

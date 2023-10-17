@@ -35,6 +35,7 @@ public class EventControllerPrivate {
                                       @RequestParam(defaultValue = HeaderConstants.DEFAULT_FROM_VALUE) @Min(0) int from,
                                       @RequestParam(defaultValue = HeaderConstants.DEFAULT_SIZE_VALUE) int size) {
         Pageable pageable = PageRequest.of(from / size, size);
+        log.info("Запрос всех событий инициатором");
         return eventService.getAllByInitiator(userId, pageable);
     }
 
@@ -50,6 +51,7 @@ public class EventControllerPrivate {
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto getById(@PathVariable long userId,
                                 @PathVariable long eventId) {
+        log.info("Запрос события инициатором по id: {}", eventId);
         return eventService.getByIdByInitiator(userId, eventId);
     }
 
@@ -66,6 +68,7 @@ public class EventControllerPrivate {
     @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getRequestsByEventId(@PathVariable long userId,
                                                               @PathVariable long eventId) {
+        log.info("Запрос инициатором всех запросов на участие к событию по id: {}", eventId);
         return eventService.getRequestsByEventId(userId, eventId);
     }
 
